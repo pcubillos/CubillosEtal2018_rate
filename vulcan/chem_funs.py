@@ -1,3 +1,6 @@
+# Extracted code from https://github.com/exoclime/VULCAN  (cc4f371)
+# https://github.com/exoclime/VULCAN/blob/NCHO_beta/chem_funs.py
+
 import os
 import numpy as np
 
@@ -29,7 +32,7 @@ def s_R(T,a):
 def g_RT(T,a_low,a_high):
     #print a_low[:2]
     if np.any(np.logical_or(T < 200, T > 6000)):
-        print 'T exceeds the valid range.'
+        print('T exceeds the valid range.')
         gi = 'T out of data range!'
 
     gi = (T < 1000)*(h_RT(T, a_low)-s_R(T, a_low)) + (T >= 1000)*(h_RT(T, a_high)-s_R(T, a_high))

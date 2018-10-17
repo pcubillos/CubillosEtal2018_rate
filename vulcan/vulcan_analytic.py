@@ -1,3 +1,6 @@
+# Extracted code from https://github.com/exoclime/VULCAN (cc4f371)
+# https://github.com/exoclime/VULCAN/blob/NCHO_beta/build_atm.py
+
 import numpy as np
 from numpy import polynomial
 
