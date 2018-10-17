@@ -17,7 +17,7 @@ def get_coeffs(eq, var):
   return p.coeffs()
 
 # Define algebraic variable:
-k1, k2, k3, k4, k5, k6 = s.symbols("k1 k2 k3 k4 k5 k6")
+k1, k2, k3, k4, k5, k6, f = s.symbols("k1 k2 k3 k4 k5 k6 f")
 C, N, O = s.symbols("C N O")
 
 
@@ -55,14 +55,14 @@ for c in coeffs:
 
 # Solve for CO:
 CO  = s.symbols("CO")
-H2O = k2 * (2*O-CO) / (k2+CO)
+H2O = k2 * (f*O-CO) / (k2+CO)
 CO2 = CO * H2O / k2
 CH4 = CO / (k1*H2O)
 C2H2 = k3 * CH4**2
 C2H4 = C2H2 / k4
 
 # Polynomial coefficients sorted from lowest to highest degree:
-eq = CH4 + CO + CO2 + 2*C2H2 + 2*C2H4 - 2*C
+eq = CH4 + CO + CO2 + 2*C2H2 + 2*C2H4 - f*C
 coeffs = get_coeffs(eq, CO)[::-1]
 print("\n\nPolynomial coefficients for CO in HCO chemistry with six species:")
 for c in coeffs:
@@ -71,14 +71,14 @@ for c in coeffs:
 
 # Solve for H2O:
 H2O = s.symbols("H2O")
-CO  = k2 * (2*O-H2O) / (k2+H2O)
+CO  = k2 * (f*O-H2O) / (k2+H2O)
 CO2 = CO * H2O / k2
 CH4 = CO / (k1*H2O)
 C2H2 = k3 * CH4**2
 C2H4 = C2H2 / k4
 
 # Polynomial coefficients sorted from lowest to highest degree:
-eq = CH4 + CO + CO2 + 2*C2H2 + 2*C2H4 - 2*C
+eq = CH4 + CO + CO2 + 2*C2H2 + 2*C2H4 - f*C
 coeffs = get_coeffs(eq, H2O)[::-1]
 print("\n\nPolynomial coefficients for H2O in HCO chemistry with six species:")
 for c in coeffs:
@@ -125,16 +125,16 @@ for c in coeffs:
 
 # Solve for CO:
 CO = s.symbols("CO")
-H2O  = 2*O - CO
+H2O  = f*O - CO
 CH4  = CO / (k1*H2O)
 C2H2 = k3 * CH4**2
 C2H4 = C2H2 / k4
-HCN  = 2*C - CH4 - CO - 2*C2H2 - 2*C2H4
+HCN  = f*C - CH4 - CO - 2*C2H2 - 2*C2H4
 NH3  = HCN / (CH4*k6)
 N2   = k5 * NH3**2
 
 # Polynomial coefficients sorted from lowest to highest degree:
-eq = 2*N2 + NH3 + HCN - 2*N
+eq = 2*N2 + NH3 + HCN - f*N
 coeffs = get_coeffs(eq, CO)[::-1]
 scoeffs = s.factor(coeffs)
 print("\n\nPolynomial coefficients for CO in HCNO chemistry with eight"
@@ -144,16 +144,16 @@ for c in scoeffs:
 
 # Solve for H2O:
 H2O = s.symbols("H2O")
-CO  = 2*O - H2O
+CO  = f*O - H2O
 CH4  = CO / (k1*H2O)
 C2H2 = k3 * CH4**2
 C2H4 = C2H2 / k4
-HCN  = 2*C - CH4 - CO - 2*C2H2 - 2*C2H4
+HCN  = f*C - CH4 - CO - 2*C2H2 - 2*C2H4
 NH3  = HCN / (CH4*k6)
 N2   = k5 * NH3**2
 
 # Polynomial coefficients sorted from lowest to highest degree:
-eq = 2*N2 + NH3 + HCN - 2*N
+eq = 2*N2 + NH3 + HCN - f*N
 coeffs = get_coeffs(eq, H2O)[::-1]
 scoeffs = s.factor(coeffs)
 print("\n\nPolynomial coefficients for H2O in HCNO chemistry with eight"
