@@ -9,50 +9,7 @@ import numpy as np
 import scipy.constants as sc
 import multiprocessing as mp
 
-
-def tea(temp, press, C, N, O, t, c, n, o):
-  """
-  TEA wrapper to compute abundancecs for given atmospheric properties.
-
-  Example
-  -------
-  >>> nlayers = 100
-  >>> press = np.logspace(-8, 3, nlayers)
-  >>> temp  = np.tile(1500.0, nlayers)
-  >>> C, N, O = 2.5e-4, 1e-4, 5e-4
-
-  >>> ti = time.time()
-  >>> qtea = tea(temp, press, C, N, O)
-  >>> print(time.time()-ti)
-  """
-  # Make pre-atm:
-  elements = ["H", "C", "N", "O"]
-  nfrac    = [1.0,  C,   N,   O]
-  specs = elements + ["H2", "H2O", "CH4", "CO", "CO2", "NH3",
-                      "C2H2", "C2H4", "HCN", "N2"]
-  d = np.loadtxt("../inputs/TEA_gdata_defaults.txt", unpack=True, dtype=str)
-  sd = {d[0,i]:d[1,i] for i in np.arange(len(d[0]))}
-  sspecs = np.zeros(len(specs), "|S50")
-  for i in np.arange(len(specs)):
-    sspecs[i] = sd[specs[i]]
-  patm = "./preatm_{:02d}_{:02d}_{:02d}_{:02d}.tea".format(t,c,n,o)
-  with open(patm, 'w') as f:
-    f.write("# TEA pre-atmosphere file.\n\n")
-    f.write('#SPECIES\n{:s}\n\n'.format(" ".join(sspecs)))
-    f.write("#TEADATA\n#Pressure          Temp  " +
-          "  ".join(["{:>12s}".format(atom) for atom in elements])+"\n")
-    for i in np.arange(len(temp)):
-      f.write("{:10.4e}     {:>8.2f}  ".format(press[i], temp[i]))
-      f.write("  ".join(["{:12.6e}".format(abun) for abun in nfrac]) + "\n")
-  # Run TEA:
-  atmf = "atm_{:02d}_{:02d}_{:02d}_{:02d}".format(t,c,n,o)
-  proc = subprocess.Popen(["../TEA/tea/runatm.py", patm, atmf])
-  proc.communicate()
-  # Gather results:
-  d = np.loadtxt(atmf+".tea", skiprows=8, unpack=True)
-  os.remove(patm)
-  #      H2O,  CH4,  CO,   CO2,   NH3,   C2H2,  C2H4,  HCN,   N2,    H2:
-  return d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15], d[6]
+import tea_wrapper as tw
 
 
 def worker(H2O, CO, temp, press, C, N, O, temps):
@@ -66,7 +23,7 @@ def worker(H2O, CO, temp, press, C, N, O, temps):
       for n in np.arange(len(N)):
         for t in temps:
           T = np.tile(temp[t], len(press))
-          qtea = tea(T, press, C[c], N[n], O[o], t, c, n, o)
+          qtea = tw.tea(T, press, C[c], N[n], O[o], t, c, n, o)
           H2O[:,t,c,n,o] = qtea[0]
           CO [:,t,c,n,o] = qtea[2]
           if 0 in temps:
@@ -95,7 +52,7 @@ def main():
 
   procs = []
   for i in np.arange(ncpu):
-    temps = np.arange(i,nt, ncpu)
+    temps = np.arange(i, nt, ncpu)
     p = mp.Process(target=worker, args=(H2O, CO, temp, press, C, N, O, temps))
     p.start()
     procs.append(p)

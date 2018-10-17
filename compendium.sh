@@ -24,7 +24,6 @@ python $topdir/code/vulcan.py
 
 
 # 'Do' algebra to get the polynomial coefficients:
-cd $topdir/code
 python $topdir/code/algebra.py
 
 
