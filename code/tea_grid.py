@@ -1,12 +1,7 @@
 #! /usr/bin/env python
 
-import sys
-import os
-import time
-import subprocess
 import ctypes
 import numpy as np
-import scipy.constants as sc
 import multiprocessing as mp
 
 import tea_wrapper as tw
@@ -23,11 +18,16 @@ def worker(H2O, CO, temp, press, C, N, O, temps):
       for n in np.arange(len(N)):
         for t in temps:
           T = np.tile(temp[t], len(press))
-          qtea = tw.tea(T, press, C[c], N[n], O[o], t, c, n, o)
+          qtea = tw.tea(T, press, C[c], N[n], O[o], (t, c, n, o))
           H2O[:,t,c,n,o] = qtea[0]
           CO [:,t,c,n,o] = qtea[2]
           if 0 in temps:
-            print("[{:2d}/20 {:2d}/11 {:2d}/11 {:2d}/11]".format(t, c, o, n))
+            if len(temps) == 1:
+              dt = 1
+            else:
+              dt = temps[1] - temps[0]
+            print("[{:2d}/{:d} {:2d}/11 {:2d}/11 {:2d}/11]"
+                  .format(t//dt, len(temps), c, o, n))
 
 
 def main():
