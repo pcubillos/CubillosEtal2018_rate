@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-import numpy as np
 import sympy as s
 
 
@@ -8,11 +7,12 @@ def get_coeffs(eq, var):
   """
   Get algebraic formula for the polynomial coefficients of an equation.
   """
+  # Simplify equation into: numer/denom, where both numer and denom
+  # are polynomial expression that do dot involve divisions.
   eq = s.simplify(eq)
+  # Take only the numerator:
   numer = s.numer(eq)
-  denom = s.denom(eq)
-  eqq = numer*denom
-
+  # Get the coefficients for the specified variable:
   p = s.Poly(numer, var)
   return p.coeffs()
 

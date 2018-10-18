@@ -1,11 +1,8 @@
 #! /usr/bin/env python
 
-import sys
 import os
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
 import subprocess
+import numpy as np
 
 
 rootdir = os.path.realpath(os.path.dirname(__file__) + "/..")
@@ -27,7 +24,7 @@ def tea(temp, press, C, N, O, indices=None):
   O: Float
      Oxygen elemental fraction.
   indices: 4-element integer tuple
-     If not None, output-file indices (to differentiate runs).
+     If not None, output-file indices to tag differentiate runs.
 
   Returns
   -------
@@ -37,14 +34,12 @@ def tea(temp, press, C, N, O, indices=None):
 
   Example
   -------
+  >>> import tea_wrapper as tw
   >>> nlayers = 100
   >>> press = np.logspace(-8, 3, nlayers)
   >>> temp  = np.tile(1500.0, nlayers)
   >>> C, N, O = 2.5e-4, 1e-4, 5e-4
-
-  >>> ti = time.time()
-  >>> qtea = tea(temp, press, C, N, O)
-  >>> print(time.time()-ti)
+  >>> qtea = tw.tea(temp, press, C, N, O)
   """
   # Unpack indices for filenames:
   if indices is not None:
@@ -60,8 +55,8 @@ def tea(temp, press, C, N, O, indices=None):
   nfrac    = [1.0,  C,   N,   O]
   specs = elements + ["H2", "H2O", "CH4", "CO", "CO2", "NH3",
                       "C2H2", "C2H4", "HCN", "N2"]
-  d = np.loadtxt(rootdir+"/inputs/TEA_gdata_defaults.txt",
-                 unpack=True, dtype=str)
+  d = np.array(np.loadtxt(rootdir+"/inputs/TEA_gdata_defaults.txt",
+                          unpack=True, dtype=bytes), "U50")
   sd = {d[0,i]:d[1,i] for i in np.arange(len(d[0]))}
   sspecs = np.zeros(len(specs), "U50")
   for i, spec in enumerate(specs):
@@ -75,6 +70,7 @@ def tea(temp, press, C, N, O, indices=None):
     for p,t in zip(press,temp):
       f.write("{:10.4e}     {:>8.2f}  ".format(p,t))
       f.write("  ".join(["{:12.6e}".format(abun) for abun in nfrac]) + "\n")
+
   # Run TEA:
   proc = subprocess.Popen([rootdir+"/TEA/tea/runatm.py", patm, atmf])
   proc.communicate()
