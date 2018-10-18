@@ -15,7 +15,7 @@ git checkout 6d364b3
 cd $topdir/
 git clone https://github.com/pcubillos/TEA
 cd $topdir/TEA
-git checkout e585f3e
+git checkout 49312481
 
 
 # Run VULCAN code (see results in $topdir/plots/ folder):
