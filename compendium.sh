@@ -39,5 +39,6 @@ python $topdir/code/turnover.py
 cd $topdir
 python $topdir/code/fig_domain.py
 python $topdir/code/fig_regimes.py
+cd $topdir/run02_tea
 python $topdir/code/fig_bench.py
 python $topdir/code/fig_hot.py
