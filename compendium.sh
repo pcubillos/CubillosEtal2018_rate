@@ -35,4 +35,9 @@ python $topdir/code/tea_grid.py
 cd $topdir/run02_tea
 python $topdir/code/turnover.py
 
-
+# Article plots:
+cd $topdir
+python $topdir/code/fig_domain.py
+python $topdir/code/fig_regimes.py
+python $topdir/code/fig_bench.py
+python $topdir/code/fig_hot.py
