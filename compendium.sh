@@ -8,7 +8,7 @@ topdir=`pwd`
 cd $topdir/
 git clone https://github.com/pcubillos/rate
 cd $topdir/rate
-git checkout 6d364b3
+git checkout 643493b
 
 # Clone TEA
 #git clone https://github.com/dzesmin/TEA
@@ -34,6 +34,12 @@ python $topdir/code/tea_grid.py
 # Fit turn-over pressure with quartic polynomial:
 cd $topdir/run02_tea
 python $topdir/code/turnover.py
+
+
+# Explore parameter space to find most adequate approach for each case:
+cd $topdir/run02_tea
+python $topdir/code/explore.py
+
 
 # Article plots:
 cd $topdir
