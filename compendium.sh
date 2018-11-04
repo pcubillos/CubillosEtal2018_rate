@@ -28,16 +28,16 @@ python $topdir/code/algebra.py
 
 
 # Run TEA grid for C>=O parameter space:
-cd $topdir/run02_tea
+cd $topdir/run_tea
 python $topdir/code/tea_grid.py
 
 # Fit turn-over pressure with quartic polynomial:
-cd $topdir/run02_tea
+cd $topdir/run_tea
 python $topdir/code/turnover.py
 
 
 # Explore parameter space to find most adequate approach for each case:
-cd $topdir/run02_tea
+cd $topdir/run_tea
 python $topdir/code/explore.py
 
 
@@ -45,6 +45,6 @@ python $topdir/code/explore.py
 cd $topdir
 python $topdir/code/fig_domain.py
 python $topdir/code/fig_regimes.py
-cd $topdir/run02_tea
+cd $topdir/run_tea
 python $topdir/code/fig_bench.py
 python $topdir/code/fig_hot.py
