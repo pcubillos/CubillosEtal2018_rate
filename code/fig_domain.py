@@ -81,3 +81,4 @@ plt.text(1.2e-12, 10, "H2O dominated", fontsize=fs-4)
 ax.tick_params(labelsize=fs-2)
 
 plt.savefig("plots/domains.ps")
+plt.savefig("plots/domains.pdf")

@@ -74,3 +74,4 @@ plt.text(xtext, 0.03, r"$T=3000\,$K", fontsize=fs-2, transform=ax.transAxes)
 plt.xlabel("Mixing ratio", fontsize=fs)
 
 plt.savefig("../plots/hot_limit.ps")
+plt.savefig("../plots/hot_limit.pdf")

@@ -76,3 +76,4 @@ text(0.35, 0.45, r"HCO(CO)", fs)
 ax.tick_params(labelsize=fs-1)
 
 plt.savefig("plots/regimes.ps")
+plt.savefig("plots/regimes.pdf")

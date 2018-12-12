@@ -74,8 +74,6 @@ def qflag(sol, C, N, O, tol=1.01):
   return flag
 
 
-
-
 def main():
   # Setup:
   nlayers = 100
@@ -106,6 +104,7 @@ def main():
 
   hflag = np.zeros((nlayers, nt, nz,nz,nz), bool)
 
+  print("This will take a few minutes.")
   ti = time.time()
   for t, T in enumerate(temperature):
     temp = np.tile(T, nlayers)
@@ -124,8 +123,7 @@ def main():
           flag2[:,:,t,c,n,o] = qflag(sol2, C, N, O)
           flag3[:,:,t,c,n,o] = qflag(sol3, C, N, O)
           hflag[:,t,c,n,o] = sol1[10] < sol1[9]  # H < H2
-        print("[{:2d}: {:2d},{:2d}]:  {:.2e}  {:.2e}  {:.2e}".
-              format(t, o, c, O, C, C/O))
+    print("{:2d}/{:d}".format(t+1, len(temperature)))
   tf = time.time()
   print(tf-ti)
 
@@ -217,7 +215,7 @@ def main():
   flag4 = np.zeros((10, nlayers, nt, nz,nz,nz), bool)
   hflag = np.zeros((nlayers, nt, nz,nz,nz), bool)
 
-
+  print("\nBear with me again, a few more minutes.")
   ti = time.time()
   for t, T in enumerate(temperature):
     temp = np.tile(T, nlayers)
@@ -240,8 +238,7 @@ def main():
           flag3[:, iCO,t,c,n,o] = qflag(sol3[:, iCO],C,N,O)
           flag4[:,~iCO,t,c,n,o] = qflag(sol4[:,~iCO],C,N,O)
           hflag[:,t,c,n,o] = sol1[10] < sol1[9]  # H < H2
-        print("[{:2d}: {:2d},{:2d}]:  {:.2e}  {:.2e}  {:.2e}".
-              format(t, o, c, r.O, r.C, r.C/r.O))
+    print("{:2d}/{:d}".format(t+1, len(temperature)))
   tf = time.time()
   print(tf-ti)
 
@@ -261,8 +258,8 @@ def main():
   #     Neg    H2O    CH4     CO    CO2    NH3   C2H2   C2H4    HCN     N2
   # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
   # (Lower atmosphere, solve for CO:)
-  # [     0      0   1895      0      0      0      0      0    932      0]
-  # [     0      0 179146      0      0      0  95028 108264  20265    228]
+  # [     0      0   1885      0      0      0      0      0    903      0]
+  # [     0      0 179094      0      0      0  94992 108219  20232    227]
   # (Upper atmosphere, solve for H2O:)
   # [     0      0      0      0      0      0      0      0  19712      0]
   # [     0      0      0      0      0      0      0      0      0      0]

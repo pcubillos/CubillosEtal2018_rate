@@ -1,33 +1,43 @@
 #! /usr/bin/env python
 
+import sys
 import ctypes
 import numpy as np
 import multiprocessing as mp
 
 import tea_wrapper as tw
 
+sys.path.append("../rate")
+import rate
 
-def worker(H2O, CO, temp, press, C, N, O, temps):
+
+def worker(H2O, CO, temp, press, C, N, O, itemps):
   """
   Multiprocessing wrapper to run TEA calculations.
   """
-  for c in np.arange(len(C)):
-    for o in np.arange(len(O)):
+  # Rate object to provide initial guesses for TEA:
+  r = rate.Rate(C=1e-4, N=1e-4, O=1e-4, fHe=0.0)
+
+  for c in range(len(C)):
+    for o in range(len(O)):
       if C[c] < O[o]:
         continue
-      for n in np.arange(len(N)):
-        for t in temps:
+      for n in range(len(N)):
+        for t in itemps:
           T = np.tile(temp[t], len(press))
-          qtea = tw.tea(T, press, C[c], N[n], O[o], (t, c, n, o))
+          tail = "_{:02d}_{:02d}_{:02d}_{:02d}".format(t,c,n,o)
+          sol = r.solve(T, press, C[c], N[n], O[o])
+          guess = {mol: val for mol, val in zip(r.species, sol[:,0])}
+          qtea = tw.tea(T, press, C[c], N[n], O[o], tail, guess)
           H2O[:,t,c,n,o] = qtea[0]
           CO [:,t,c,n,o] = qtea[2]
-          if 0 in temps:
-            if len(temps) == 1:
+          if 0 in itemps:
+            if len(itemps) == 1:
               dt = 1
             else:
-              dt = temps[1] - temps[0]
+              dt = itemps[1] - itemps[0]
             print("[{:2d}/{:d} {:2d}/11 {:2d}/11 {:2d}/11]"
-                  .format(t//dt, len(temps), c, o, n))
+                  .format(t//dt, len(itemps), c, o, n))
 
 
 def main():
@@ -36,7 +46,7 @@ def main():
   nt = 20
   nz = 11
   # Number of parallel CPUs:
-  ncpu = 7
+  ncpu = 8
 
   press = np.logspace(-8, 3, nl)
   temp = np.logspace(2.305, 3.778, nt)

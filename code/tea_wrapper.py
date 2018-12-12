@@ -7,7 +7,7 @@ import numpy as np
 
 rootdir = os.path.realpath(os.path.dirname(__file__) + "/..")
 
-def tea(temp, press, C, N, O, indices=None):
+def tea(temp, press, C, N, O, tail='', guess={}):
   """
   TEA wrapper to compute abundancecs for given atmospheric properties.
 
@@ -23,8 +23,10 @@ def tea(temp, press, C, N, O, indices=None):
      Nitrogen elemental fraction.
   O: Float
      Oxygen elemental fraction.
-  indices: 4-element integer tuple
-     If not None, output-file indices to tag differentiate runs.
+  tail: string
+     output file name tail.
+  guess: dict
+     Dictionary with guess values for species.
 
   Returns
   -------
@@ -41,14 +43,10 @@ def tea(temp, press, C, N, O, indices=None):
   >>> C, N, O = 2.5e-4, 1e-4, 5e-4
   >>> qtea = tw.tea(temp, press, C, N, O)
   """
-  # Unpack indices for filenames:
-  if indices is not None:
-    t, c, n, o = indices
-    patm = "preatm_{:02d}_{:02d}_{:02d}_{:02d}.tea".format(t,c,n,o)
-    atmf = "atm_{:02d}_{:02d}_{:02d}_{:02d}".format(t,c,n,o)
-  else:
-    patm = "preatm.tea"
-    atmf = "atm"
+  # File names:
+  patm   = "preatm{:s}.tea".format(tail)
+  atmf   = "atm{:s}".format(tail)
+  guessf = "guess{:s}.txt".format(tail)
 
   # Make pre-atm:
   elements = ["H", "C", "N", "O"]
@@ -59,8 +57,14 @@ def tea(temp, press, C, N, O, indices=None):
                           unpack=True, dtype=bytes), "U50")
   sd = {d[0,i]:d[1,i] for i in np.arange(len(d[0]))}
   sspecs = np.zeros(len(specs), "U50")
+  guesses = np.tile(1e-50, len(specs))
   for i, spec in enumerate(specs):
     sspecs[i] = sd[spec]
+    if spec in guess:
+      guesses[i] = guess[spec]
+
+  with open(guessf, 'w') as f:
+    f.write(" ".join("{:.5e}".format(val) for val in guesses))
 
   with open(patm, 'w') as f:
     f.write("# TEA pre-atmosphere file.\n\n")
@@ -72,10 +76,14 @@ def tea(temp, press, C, N, O, indices=None):
       f.write("  ".join(["{:12.6e}".format(abun) for abun in nfrac]) + "\n")
 
   # Run TEA:
-  proc = subprocess.Popen([rootdir+"/TEA/tea/runatm.py", patm, atmf])
+  if guess != {}:
+    proc = subprocess.Popen([rootdir+"/TEA/tea/runatm.py", patm, atmf, guessf])
+  else:
+    proc = subprocess.Popen([rootdir+"/TEA/tea/runatm.py", patm, atmf])
   proc.communicate()
   # Gather results:
   d = np.loadtxt(atmf+".tea", skiprows=8, unpack=True)
   os.remove(patm)
+  os.remove(guessf)
   #      H2O,  CH4,  CO,   CO2,   NH3,   C2H2,  C2H4,  HCN,   N2,    H2,   H:
   return d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15], d[6], d[2]

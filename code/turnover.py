@@ -216,8 +216,7 @@ def main():
 
   print("\nTake a look at plots/TOPpolyfit.pdf to see the results.\n"
         "  Errors are typically less than 10% in pressure below 3000K,\n"
-        "  Good enough for T < 3000 K,\n"
-        "  points off at T~450K are blips in TEA.\n")
+        "  Good enough for T < 3000 K.\n")
 
 
 if __name__ == "__main__":
